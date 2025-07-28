@@ -8,7 +8,7 @@ import io.restassured.response.Response;
 import payloads.LoginRequest;
 import utilities.ApiClient;
 import utilities.ConfigManager;
-import utilities.Hooks;
+import utilities.ResponseHelper;
 
 import java.util.Objects;
 
@@ -16,13 +16,11 @@ public class LoginSteps {
 
     private final ApiClient apiClient = new ApiClient();
     private Response response;
-    LoginRequest loginPayload;
-
+    private LoginRequest loginPayload;
 
     @Given("I want send {string} and {string}")
     public void i_want_send_email_and_password(String email, String password) {
-
-        if (email.equalsIgnoreCase("<email>") && password.equalsIgnoreCase("<password>")) {
+        if ("<email>".equalsIgnoreCase(email) && "<password>".equalsIgnoreCase(password)) {
             loginPayload = new LoginRequest(
                     ConfigManager.getProperty("login.email"),
                     ConfigManager.getProperty("login.password")
@@ -46,24 +44,19 @@ public class LoginSteps {
         System.out.println("✅ Status Code Verified: " + statusCode);
     }
 
-    @And("I want to validate the response")
-    public void i_want_to_validate_the_response() {
-        if (Objects.equals(response.jsonPath().getString("message"), "Login Successfully")) {
-            System.out.println("✅ Response Body:\n" + response.getBody().asPrettyString());
+    @And("I want to validate the response {string}")
+    public void i_want_to_validate_the_response(String expectedMessage) {
+        String actualMessage = response.jsonPath().getString("message");
+//        System.out.println("✅ Response Body:\n" + response.getBody().asPrettyString());
 
-            String token = response.jsonPath().getString("token");
-            String userId = response.jsonPath().getString("userId");
-            if (token != null) {
-                Hooks.getScenarioContext().set("authToken", token);
-                System.out.println("🔑 Token stored in ScenarioContext: " + token);
+        if (Objects.equals(actualMessage, "Login Successfully")) {
+            ResponseHelper.storeAuthDetails(response);
+        } else {
+            if (!Objects.equals(actualMessage, expectedMessage)) {
+                throw new AssertionError("❌ Expected error message: " + expectedMessage +
+                        " but got: " + actualMessage);
             }
-            if (userId != null) {
-                Hooks.getScenarioContext().set("userId", userId);
-                System.out.println("👤 userId stored in ScenarioContext: " + userId);
-            }
-        }else {
-            System.out.println("✅ Response Body:\n" + response.getBody().asPrettyString());
+            System.out.println("✅ Error Message Verified: " + expectedMessage);
         }
-
     }
 }
