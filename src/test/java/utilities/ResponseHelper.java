@@ -5,7 +5,7 @@ import io.restassured.response.Response;
 public class ResponseHelper {
 
     /**
-     * ✅ Extract token & userId from response and store them in ScenarioContext.
+       Extract token & userId from response and store them in ScenarioContext.
      */
     public static void storeAuthDetails(Response response) {
         String token = response.jsonPath().getString("token");
