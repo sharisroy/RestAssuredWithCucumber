@@ -1,7 +1,6 @@
 package stepDefinitions;
 
 import io.cucumber.java.en.And;
-import io.cucumber.java.en.Given;
 import io.restassured.response.Response;
 import utilities.Hooks;
 import utilities.ResponseHelper;
@@ -15,7 +14,7 @@ public class ProductSteps {
         Response response = (Response) Hooks.getScenarioContext().get("response");
         String actualMessage = response.jsonPath().getString("message");
 
-        if (Objects.equals(actualMessage, "All Products fetched Successfully")) {
+        if (Objects.equals(actualMessage, expectedMessage)) {
             ResponseHelper.storeFirstProductInfo(response);
         }
 

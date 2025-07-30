@@ -31,7 +31,7 @@ public class LoginSteps {
         Response response = (Response) Hooks.getScenarioContext().get("response");
         String actualMessage = response.jsonPath().getString("message");
 
-        if (Objects.equals(actualMessage, "Login Successfully")) {
+        if (Objects.equals(actualMessage, expectedMessage)) {
             ResponseHelper.storeAuthDetails(response);
         }
 

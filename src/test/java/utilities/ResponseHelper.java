@@ -25,31 +25,19 @@ public class ResponseHelper {
     }
 
 
+
     public static void storeFirstProductInfo(Response response) {
         JsonPath jsonPath = response.jsonPath();
 
-        // Get full first product object as a Map
+        // Get first product
         Map<String, Object> firstProduct = jsonPath.getMap("data[0]");
 
         if (firstProduct != null && !firstProduct.isEmpty()) {
             Hooks.getScenarioContext().set("firstProduct", firstProduct);
+            GlobalState.setFirstProduct(firstProduct);
             System.out.println("🧾 Full First Product stored: " + firstProduct);
         }
-
-        // Optional: Still store individual fields for convenience
-        String productId = (String) firstProduct.get("_id");
-        String productName = (String) firstProduct.get("productName");
-        String productCategory = (String) firstProduct.get("productCategory");
-
-        if (productId != null) {
-            Hooks.getScenarioContext().set("firstProductId", productId);
-        }
-        if (productName != null) {
-            Hooks.getScenarioContext().set("firstProductName", productName);
-        }
-        if (productCategory != null) {
-            Hooks.getScenarioContext().set("firstProductCategory", productCategory);
-        }
     }
+
 
 }

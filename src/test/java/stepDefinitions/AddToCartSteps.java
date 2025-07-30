@@ -2,47 +2,56 @@ package stepDefinitions;
 
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
-import io.cucumber.java.en.When;
 import io.restassured.response.Response;
-import utilities.ApiClient;
-import utilities.ConfigManager;
+import utilities.GlobalState;
 import utilities.Hooks;
+import utilities.ResponseHelper;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class AddToCartSteps {
 
-    @SuppressWarnings("unchecked")
-    @Given("I want to send valid add to card payload")
-    public void i_want_to_send_valid_add_to_card_payload() {
-        Map<String, Object> product = (Map<String, Object>) Hooks.getScenarioContext().get("firstProduct");
-        String userId = (String) Hooks.getScenarioContext().get("userId");
+    @Given("I prepare the add to cart payload")
+    public void i_prepare_the_add_to_cart_payload() {
+        // ✅ Get product info stored earlier by ProductSteps
+        Map<String, Object> firstProduct = GlobalState.getFirstProduct();
+        String userId = GlobalState.getUserId();
 
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("userId", userId);
-        payload.put("product", product);
-
-        Hooks.getScenarioContext().set("cardPayload", payload);
-    }
-
-    @When("I want to send a POST request add to card to {string}")
-    public void i_want_to_send_a_post_request_to(String endpoint) {
-        ApiClient apiClient = new ApiClient();
-        apiClient.setBaseUrl(ConfigManager.getProperty("base.url"));
-
-
-        Object requestPayload = Hooks.getScenarioContext().get("requestPayload");
-        if (requestPayload != null) {
-            apiClient.setBody(requestPayload);
+        if (userId == null) {
+            throw new RuntimeException("❌ No userId found! Did you run the login API ?");
         }
 
-        Response response = apiClient.post(endpoint);
-        Hooks.getScenarioContext().set("response", response);
+        if (firstProduct == null) {
+            throw new RuntimeException("❌ No product found! Did you run the product API ?");
+        }
+
+        // ✅ Create payload
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("_id", userId);
+        payload.put("product", firstProduct);
+
+        System.out.println("payload: " + payload);
+//
+        // ✅ Store payload in ScenarioContext for CommonSteps
+        Hooks.getScenarioContext().set("requestPayload", payload);
     }
 
-//    @And("I want to validate the add to cart response {string}")
-//    public void iWantToValidateTheAddToCartResponse() {
-//
-//    }
+    @And("I want to validate the add to cart response {string}")
+    public void iWantToValidateTheAddToCartResponse(String expectedMessage) {
+        Response response = (Response) Hooks.getScenarioContext().get("response");
+        String actualMessage = response.jsonPath().getString("message");
+
+        if (Objects.equals(actualMessage, expectedMessage)) {
+            ResponseHelper.storeFirstProductInfo(response);
+        }
+
+        if (!Objects.equals(actualMessage, expectedMessage)) {
+            throw new AssertionError("❌ Expected message: " + expectedMessage +
+                    " but got: " + actualMessage);
+        }
+
+        System.out.println("✅ Message Verified: " + expectedMessage);
+    }
 }
