@@ -14,11 +14,11 @@ public class Hooks {
         System.out.println("Starting scenario: " + scenario.getName());
         scenarioContextThreadLocal.set(new ScenarioContext());
 
-        //  Skip auto-login for scenarios tagged with @login
-//        if (scenario.getSourceTagNames().contains("@login")) {
-//            System.out.println("⏭ Skipping auto-login for scenario tagged @login");
-//            return;
-//        }
+//      Skip auto-login for scenarios tagged with @invalid_login
+        if (scenario.getSourceTagNames().contains("@invalid_login")) {
+            System.out.println("⏭ Skipping auto-login for scenario tagged @login");
+            return;
+        }
 
 
         // Create login payload from config
@@ -41,7 +41,7 @@ public class Hooks {
         if(token == null && userId == null) {
             System.out.println(" ERROR: No token found");
         } else {
-            System.out.println(" Token stored in ScenarioContext: " + token);
+//            System.out.println(" Token stored in ScenarioContext: " + token);
         }
         // Store in ScenarioContext for later use
         getScenarioContext().set("authToken", token);
