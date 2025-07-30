@@ -1,20 +1,20 @@
 Feature: Get Product List API
+  @smoke
   Scenario: Retrieve all product successfully
-    Given I want to send valid information
     When I want to send a POST request to "product/get-all-products"
     Then I should receive a 200 status code
-    And I want to validate the response "All Products fetched Successfully"
+    And I want to validate the get product response "All Products fetched Successfully"
 
+  @negative @regression
   Scenario: Retrieve products with blank token
-    Given I want to send valid information
     And I set an blank token in the header
     When I want to send a POST request to "product/get-all-products"
     Then I should receive a 401 status code
-    And I want to validate the response "Access denied. No token provided."
+    And I want to validate the get product response "Access denied. No token provided."
 
+  @negative @regression
   Scenario: Retrieve products with invalid token
-    Given I want to send valid information
     And I set an invalid token in the header
     When I want to send a POST request to "product/get-all-products"
     Then I should receive a 401 status code
-    And I want to validate the response "Session Timeout"
+    And I want to validate the get product response "Session Timeout"

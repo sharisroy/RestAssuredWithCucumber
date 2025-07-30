@@ -1,2 +1,5 @@
 1. Create a maven project
-2. 
+
+
+
+mvn clean test -Dcucumber.filter.tags="@smoke"

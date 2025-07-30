@@ -7,9 +7,6 @@ import io.restassured.response.Response;
 import utilities.ApiClient;
 import utilities.ConfigManager;
 import utilities.Hooks;
-import utilities.ResponseHelper;
-
-import java.util.Objects;
 
 public class CommonSteps {
     private ApiClient getApiClient() {
@@ -56,25 +53,6 @@ public class CommonSteps {
         System.out.println("✅ Status Code Verified: " + statusCode);
     }
 
-    @And("I want to validate the response {string}")
-    public void i_want_to_validate_the_response(String expectedMessage) {
-        Response response = (Response) Hooks.getScenarioContext().get("response");
-        String actualMessage = response.jsonPath().getString("message");
-
-        if (Objects.equals(actualMessage, "Login Successfully")) {
-            ResponseHelper.storeAuthDetails(response);
-        }
-        if (Objects.equals(actualMessage, "All Products fetched Successfully")) {
-            ResponseHelper.storeFirstProductInfo(response);
-        }
-
-        if (!Objects.equals(actualMessage, expectedMessage)) {
-            throw new AssertionError("❌ Expected message: " + expectedMessage +
-                    " but got: " + actualMessage);
-        }
-
-        System.out.println("✅ Message Verified: " + expectedMessage);
-    }
 
     @And("I set an invalid token in the header")
     public void i_set_an_invalid_token_in_the_header() {

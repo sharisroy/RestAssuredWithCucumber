@@ -1,6 +1,9 @@
 package utilities;
 
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+
+import java.util.Map;
 
 public class ResponseHelper {
 
@@ -21,42 +24,32 @@ public class ResponseHelper {
         }
     }
 
+
     public static void storeFirstProductInfo(Response response) {
-        String productId = response.jsonPath().getString("data[0]._id");
-        String productName = response.jsonPath().getString("data[0].productName");
-        String productCategory = response.jsonPath().getString("data[0].productCategory");
+        JsonPath jsonPath = response.jsonPath();
+
+        // Get full first product object as a Map
+        Map<String, Object> firstProduct = jsonPath.getMap("data[0]");
+
+        if (firstProduct != null && !firstProduct.isEmpty()) {
+            Hooks.getScenarioContext().set("firstProduct", firstProduct);
+            System.out.println("🧾 Full First Product stored: " + firstProduct);
+        }
+
+        // Optional: Still store individual fields for convenience
+        String productId = (String) firstProduct.get("_id");
+        String productName = (String) firstProduct.get("productName");
+        String productCategory = (String) firstProduct.get("productCategory");
 
         if (productId != null) {
             Hooks.getScenarioContext().set("firstProductId", productId);
-            System.out.println("🆔 Product ID stored: " + productId);
         }
-
         if (productName != null) {
             Hooks.getScenarioContext().set("firstProductName", productName);
-            System.out.println("📦 Product Name stored: " + productName);
         }
-
         if (productCategory != null) {
             Hooks.getScenarioContext().set("firstProductCategory", productCategory);
-            System.out.println("🗂️ Product Category stored: " + productCategory);
         }
-
-
-//        int totalProducts = response.jsonPath().getList("data").size();
-//        System.out.println("📦 Total products returned: " + totalProducts);
-//
-//        if (totalProducts == 0) {
-//            throw new AssertionError("❌ Expected non-empty product list but got 0.");
-//        }
-//
-//        // Store first product details for next test
-//        String firstProductId = response.jsonPath().getString("data[0]._id");
-//        String firstProductName = response.jsonPath().getString("data[0].productName");
-//
-//        Hooks.getScenarioContext().set("firstProductId", firstProductId);
-//        Hooks.getScenarioContext().set("firstProductName", firstProductName);
-//
-//        System.out.println("✅ Stored First Product: ID = " + firstProductId + ", Name = " + firstProductName);
-
     }
+
 }
