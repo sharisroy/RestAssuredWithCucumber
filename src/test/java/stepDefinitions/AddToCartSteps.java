@@ -32,7 +32,7 @@ public class AddToCartSteps {
         payload.put("_id", userId);
         payload.put("product", firstProduct);
 
-        System.out.println("payload: " + payload);
+//        System.out.println("payload: " + payload);
 //
         // ✅ Store payload in ScenarioContext for CommonSteps
         Hooks.getScenarioContext().set("requestPayload", payload);

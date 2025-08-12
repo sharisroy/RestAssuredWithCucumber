@@ -35,7 +35,7 @@ public class ResponseHelper {
         if (firstProduct != null && !firstProduct.isEmpty()) {
             Hooks.getScenarioContext().set("firstProduct", firstProduct);
             GlobalState.setFirstProduct(firstProduct);
-            System.out.println("🧾 Full First Product stored: " + firstProduct);
+//            System.out.println("🧾 Full First Product stored: " + firstProduct);
         }
     }
 

@@ -20,6 +20,9 @@ public class ApiClient {
         this.baseUrl = baseUrl;
         return this;
     }
+    public String getBaseUrl() {
+        return baseUrl;
+    }
 
     public ApiClient setBody(Object body) {
         this.body = body;
@@ -34,6 +37,9 @@ public class ApiClient {
     public ApiClient removeHeader(String key) {
         headers.remove(key);
         return this;
+    }
+    public Map<String, String> getHeaders() {
+        return new HashMap<>(headers); // return a copy to avoid external modification
     }
     public boolean hasHeader(String key) {
         return headers.containsKey(key);
